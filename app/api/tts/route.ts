@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { MsEdgeTTS } from "msedge-tts";
+import { MsEdgeTTS, OUTPUT_FORMAT } from "msedge-tts";
 
 // Precisa rodar em runtime Node.js (usa WebSocket internamente), não no Edge Runtime.
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 // Vozes neurais em português do Brasil disponíveis no serviço gratuito do Edge TTS.
 const VOICE = "pt-BR-FranciscaNeural";
-const FORMAT = "audio-24khz-48kbitrate-mono-mp3";
+const FORMAT = OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3;
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,16 +22,16 @@ export async function POST(req: NextRequest) {
     }
 
     const tts = new MsEdgeTTS();
-    // @ts-expect-error - a assinatura aceita o nome do formato como string
     await tts.setMetadata(VOICE, FORMAT);
 
-    const stream = tts.toStream(text);
+    const { audioStream } = tts.toStream(text);
     const chunks: Buffer[] = [];
 
     await new Promise<void>((resolve, reject) => {
-      stream.on("data", (chunk: Buffer) => chunks.push(chunk));
-      stream.on("end", () => resolve());
-      stream.on("error", (err: Error) => reject(err));
+      audioStream.on("data", (chunk: Buffer) => chunks.push(chunk));
+      audioStream.on("end", () => resolve());
+      audioStream.on("close", () => resolve());
+      audioStream.on("error", (err: Error) => reject(err));
     });
 
     const audioBuffer = Buffer.concat(chunks);

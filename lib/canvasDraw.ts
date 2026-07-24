@@ -139,7 +139,38 @@ export function drawFrame(
   const inCountdown = t >= introDuration && t < introDuration + countdownDuration;
   const inReveal = t >= introDuration + countdownDuration;
 
-  // Centro: contagem regressiva ou selo de resposta
+  // Caixas de opção (logo abaixo da pergunta, acima da contagem regressiva)
+  const boxW = CANVAS_WIDTH - 160;
+  const boxH = 190;
+  const boxX = 80;
+
+  const highlightA = inReveal && quiz.correct === "A";
+  const highlightB = inReveal && quiz.correct === "B";
+
+  drawOptionBox(
+    ctx,
+    "A",
+    quiz.optionA || "Opção A",
+    boxX,
+    560,
+    boxW,
+    boxH,
+    "#1E5FFF",
+    highlightA
+  );
+  drawOptionBox(
+    ctx,
+    "B",
+    quiz.optionB || "Opção B",
+    boxX,
+    790,
+    boxW,
+    boxH,
+    "#FF3B3B",
+    highlightB
+  );
+
+  // Parte de baixo: contagem regressiva ou selo de resposta
   if (inCountdown) {
     const secondIndex = Math.min(
       countdownDuration - 1,
@@ -150,7 +181,7 @@ export function drawFrame(
     const scale = 1 + Math.max(0, 0.35 * (1 - localT * 4)); // "pulso" no início do segundo
 
     ctx.save();
-    ctx.translate(CANVAS_WIDTH / 2, 980);
+    ctx.translate(CANVAS_WIDTH / 2, 1330);
     ctx.scale(scale, scale);
 
     ctx.beginPath();
@@ -166,7 +197,7 @@ export function drawFrame(
     const w = 860;
     const h = 300;
     const x = (CANVAS_WIDTH - w) / 2;
-    const y = 830;
+    const y = 1180;
 
     ctx.save();
     ctx.shadowColor = "rgba(0,0,0,0.35)";
@@ -187,39 +218,8 @@ export function drawFrame(
     // Intro: mostra um "5" estático e discreto como prévia do cronômetro
     ctx.fillStyle = "rgba(11,13,18,0.12)";
     ctx.font = "800 320px Arial, sans-serif";
-    ctx.fillText("5", CANVAS_WIDTH / 2, 1000);
+    ctx.fillText("5", CANVAS_WIDTH / 2, 1350);
   }
-
-  // Caixas de opção
-  const boxW = CANVAS_WIDTH - 160;
-  const boxH = 190;
-  const boxX = 80;
-
-  const highlightA = inReveal && quiz.correct === "A";
-  const highlightB = inReveal && quiz.correct === "B";
-
-  drawOptionBox(
-    ctx,
-    "A",
-    quiz.optionA || "Opção A",
-    boxX,
-    1350,
-    boxW,
-    boxH,
-    "#1E5FFF",
-    highlightA
-  );
-  drawOptionBox(
-    ctx,
-    "B",
-    quiz.optionB || "Opção B",
-    boxX,
-    1580,
-    boxW,
-    boxH,
-    "#FF3B3B",
-    highlightB
-  );
 
   // Rodapé discreto
   ctx.fillStyle = "rgba(11,13,18,0.55)";
