@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { EdgeTTS } from "msedge-tts";
+import { MsEdgeTTS } from "msedge-tts";
 
 // Precisa rodar em runtime Node.js (usa WebSocket internamente), não no Edge Runtime.
 export const runtime = "nodejs";
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const tts = new EdgeTTS();
+    const tts = new MsEdgeTTS();
     // @ts-expect-error - a assinatura aceita o nome do formato como string
     await tts.setMetadata(VOICE, FORMAT);
 
