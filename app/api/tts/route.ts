@@ -24,14 +24,14 @@ export async function POST(req: NextRequest) {
     const tts = new MsEdgeTTS();
     await tts.setMetadata(VOICE, FORMAT);
 
-    const { audioStream } = tts.toStream(text);
+    const stream = tts.toStream(text);
     const chunks: Buffer[] = [];
 
     await new Promise<void>((resolve, reject) => {
-      audioStream.on("data", (chunk: Buffer) => chunks.push(chunk));
-      audioStream.on("end", () => resolve());
-      audioStream.on("close", () => resolve());
-      audioStream.on("error", (err: Error) => reject(err));
+      stream.on("data", (chunk: Buffer) => chunks.push(chunk));
+      stream.on("end", () => resolve());
+      stream.on("close", () => resolve());
+      stream.on("error", (err: Error) => reject(err));
     });
 
     const audioBuffer = Buffer.concat(chunks);
